@@ -1,0 +1,10 @@
+[
+  {
+    "if": {
+      "field_name": {
+        "operator": "value"
+      }
+    },
+    "reason": "Explanation for why this should be flagged"
+  }
+]

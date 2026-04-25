@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Audit Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Interactive Dashboard</h1>
+    {% if charts and charts|length > 0 %}
+      {% for c in charts %}
+        <div class="card" style="margin-bottom:16px;">
+          {{ c | safe }}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No flagged data available for visualization.</p>
+    {% endif %}
+    <div class="actions"><a class="button" href="/">Home</a></div>
+  </div>
+</body>
+</html>

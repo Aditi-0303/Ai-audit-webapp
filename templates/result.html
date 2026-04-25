@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Audit Results</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>{{ message }}</h1>
+
+    {% if summary %}
+    <div class="summary">
+      <div class="summary-item"><div class="summary-value">{{ summary.total }}</div><div class="summary-label">Total Rows</div></div>
+      <div class="summary-item"><div class="summary-value">{{ summary.flagged }}</div><div class="summary-label">Flagged Rows</div></div>
+      <div class="summary-item"><div class="summary-value">{{ summary.flagged_pct }}%</div><div class="summary-label">Flagged %</div></div>
+      <div class="summary-item">
+        {% set by = summary.get('by_source', {}) %}
+        <div class="summary-value">
+          Rules: {{ by.get('rules', 0) }} | ML: {{ by.get('ml', 0) }} | Both: {{ by.get('both', 0) }}
+        </div>
+        <div class="summary-label">By Source</div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if table %}
+      <div class="table-container">
+        {{ table | safe }}
+      </div>
+
+      <div class="actions">
+        {% if download_available %}<a class="button secondary" href="/download">Download flagged CSV</a>{% endif %}
+        {% if show_dashboard %}<a class="button" href="/dashboard">View Dashboard</a>{% endif %}
+
+        <!-- ✅ New: Send Email button -->
+        <button id="sendEmailBtn" class="button secondary">📧 Send Email</button>
+
+        <a class="button" href="/">Analyze another file</a>
+      </div>
+    {% else %}
+      <div class="actions"><a class="button" href="/">← Go back</a></div>
+    {% endif %}
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      $('table.data').DataTable({ pageLength: 10, order: [], autoWidth: true });
+    });
+
+    // Ask for recipient email and send
+    const btn = document.getElementById("sendEmailBtn");
+    if (btn) {
+      btn.addEventListener("click", function() {
+        const email = prompt("Enter the email address to receive the audit summary:");
+        if (!email) return;
+        fetch("/send-email", {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: "email=" + encodeURIComponent(email)
+        })
+        .then(res => res.text().then(t => ({ ok: res.ok, text: t })))
+        .then(r => alert(r.text))
+        .catch(err => alert("Error sending email: " + err));
+      });
+    }
+  </script>
+</body>
+</html>

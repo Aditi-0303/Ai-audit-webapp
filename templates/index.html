@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI-Based Auditing System</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>AI-Based Auditing System</h1>
+    <p class="muted">Single-user mode • Upload CSV → audit with Rules + ML + XAI • Manage Custom Rules • View Dashboard</p>
+
+    <form action="/upload" method="POST" enctype="multipart/form-data" class="card">
+      <h3>Upload CSV & Settings</h3>
+
+      <div class="form-row">
+        <label for="file">Choose CSV file</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+      </div>
+
+      <div class="form-row">
+        <label>Detection mode</label>
+        <div class="inline">
+          <label><input type="radio" name="mode" value="rules"> Rules only</label>
+          <label><input type="radio" name="mode" value="ml"> ML only</label>
+          <label><input type="radio" name="mode" value="both" checked> Both</label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="contamination">ML anomaly sensitivity (0.001 - 0.2)</label>
+        <input type="number" step="0.001" min="0.001" max="0.2" id="contamination" name="contamination" value="0.03">
+        <small>Higher = more flags. Default 0.03</small>
+      </div>
+
+      <hr>
+
+      <h3>Policy Engine</h3>
+      <div class="form-row inline">
+        <label><input type="checkbox" name="check_vendor_dup" checked> Duplicate Vendor Payments</label>
+        <label><input type="checkbox" name="check_time" checked> After-hours Transactions</label>
+        <label><input type="checkbox" name="check_invoice_missing" checked> Missing Invoice Number</label>
+        <label><input type="checkbox" name="check_gst" checked> GST Mismatch</label>
+      </div>
+
+      <div class="form-row inline">
+        <label>Business Hours:
+          <input type="number" name="biz_start" value="9" style="width:70px"> to
+          <input type="number" name="biz_end" value="18" style="width:70px">
+        </label>
+        <label>Expected GST:
+          <input type="number" step="0.1" name="gst_expected" placeholder="e.g. 18">
+        </label>
+        <label>Tolerance:
+          <input type="number" step="0.1" name="gst_tolerance" value="0.5">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>Vendor Whitelist (comma-separated)</label>
+        <input type="text" name="vendor_whitelist" placeholder="ABC Supplies, XYZ Traders">
+      </div>
+      <div class="form-row">
+        <label>Vendor Blacklist (comma-separated)</label>
+        <input type="text" name="vendor_blacklist" placeholder="Fraud Co, Scam Pvt Ltd">
+      </div>
+
+      <button type="submit">Upload & Audit</button>
+    </form>
+
+    <div class="actions" style="margin-top:16px">
+      <a class="button" href="/manage-rules">Manage Custom Rules</a>
+      <a class="button secondary" href="/dashboard">Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>
